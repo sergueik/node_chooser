@@ -37,10 +37,11 @@ There was [earlier work](https://github.com/sergueik/powershell_ui_samples/blob/
 
 ![Windows PowershellExample](https://github.com/sergueik/node_chooser/blob/master/screenshots/windows_powershell.png)
 
-
 ### See also
+
   * [FileReader](http://www.html5rocks.com/en/tutorials/file/dndfiles/)
   * [standalone yaml parser javsctit package](https://github.com/nodeca/js-yaml)
+  * [pure javascript file loader](https://codepen.io/KryptoniteDove/post/load-json-file-locally-using-pure-javascript) -  not applicable for local file case
 
 ### Author
 

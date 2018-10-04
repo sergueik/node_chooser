@@ -24,7 +24,8 @@
   </fieldset>
 </form>
 <div id='errors'></div>
-<script src='js-yaml.min.js'></script>
+<script type='text/javascript' src='js-yaml.min.js'></script>
+<script type='text/javascript' src='config.js'></script>
 <script type='text/javascript'>
 function loadFile() {
   var input, file, fr;
@@ -43,10 +44,63 @@ function loadFile() {
   } else if (!input.files[0]) {
     alert("Please select a file before clicking 'Load'");
   } else {
-    file = input.files[0];
+
+
+    fileName = input.files[0];
+    try {
+      console.log(fileName);
+    } catch (e) {}
     fr = new FileReader();
     fr.onload = receivedText;
-    fr.readAsText(file);
+    fr.readAsText(fileName);
+    try {
+      configFile = './config.json';
+      loadJSON(configFile, function(response) {
+        // Parse JSON string into object
+        var config_obj = JSON.parse(response);
+        console.log('Loaded: ' + config_obj.toString());
+        // TODO: nesting ?
+      });
+
+    } catch (e) {
+      // cross origin requests are only supported
+      // for protocol schemes: http, data, chrome, chrome-extension, https.
+      console.log('Exception (ignored): ' + e.toString());
+    }
+
+  }
+
+  function loadJSON(sourceFile, callback) {
+
+    console.log('Loading: ' + sourceFile);
+    try {
+      var xobj = new XMLHttpRequest();
+      xobj.overrideMimeType('application/json');
+      xobj.open('GET', sourceFile, true);
+    } catch (e) {
+      console.log('Exception (ignored): ' + e.toString());
+      xobj = undefined
+    }
+    if (xobj != undefined) {
+      xobj.onreadystatechange = function() {
+        if (xobj.readyState == 4 && xobj.status == '200') {
+          callback(xobj.responseText);
+        }
+      };
+      try {
+        xobj.send(null);
+      } catch (e) {
+        // can not intercept the error
+        // cross origin requests are only supported
+        // for protocol schemes: http, data, chrome, chrome-extension, https.
+        console.log('Exception (ignored): ' + e.toString());
+      }
+    }
+  }
+
+  function processConfig() {
+    let lines = e.target.result;
+
   }
 
   function receivedText(e) {
@@ -93,6 +147,8 @@ function loadFile() {
       document.process_yaml.select_environments.options.length = 0;
       select_environments = {}
       cnt = 0;
+      let branch_names = config_data['branch_names'];
+      /*
       branch_names = {
         'test': 'TEST',
         'test_wec': 'TEST',
@@ -102,7 +158,7 @@ function loadFile() {
         'cert': 'VALIDATION',
         'cert_bcp': 'VALIDATION',
       };
-
+*/
       for (var node_name in nodes) {
         console.log('processed node: ' + node_name);
         let environment = nodes[node_name]['environment'];
@@ -114,7 +170,7 @@ function loadFile() {
       for (var environment in select_environments) {
         let environment_displayname = select_environments[environment]
         if (branch_selects.hasOwnProperty(environment_displayname)) {
-          select_environments[environment] = "";
+          select_environments[environment] = '';
           console.log('will ignore: ' + environment + '(' + environment_displayname + ') ');
         }
         branch_selects[environment_displayname] = 1;
@@ -136,6 +192,8 @@ function loadFile() {
         // console.log('loaded: ' + datacenter ) ;
         select_datacenters[datacenter] = 1;
       }
+      let datacenter_names = config_data['datacenter_names'];
+      /*
       datacenter_names = {
         'wec': 'WEC',
         'wec1': 'WEC',
@@ -143,6 +201,7 @@ function loadFile() {
         'st_louis': 'ST LOUIS',
         'sv': 'SHOREVIEW',
       };
+      */
       cnt = 0;
       for (var datacenter in select_datacenters) { // NOTE: not Object.keys->() or will get 0,1,...
         console.log('adding option: ' + datacenter);
