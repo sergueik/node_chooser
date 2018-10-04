@@ -26,7 +26,10 @@ node-ad8c3125.domain.com:
   param3: 'data'
 ```
 node set describing the cluster and evaluates the node hostname key based on combination of envionment, role and data center the node belongs, discarding non-essential information in `param` and also handling redundancy of legacy definitions (like synonims in subkeys like `environment =  test_bcp` and `environment = test`).
+The page handles sorting and filtering the node items. It has to be loaded in the Chrome browser from the local file:
 
+ 
+![OSX starting](https://github.com/sergueik/node_chooser/blob/master/screenshots/osx_open_capture.png)
 
 ### Note
 
