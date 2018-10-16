@@ -22,6 +22,9 @@ body {font-family: Arial, Helvetica, sans-serif;}
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
+.modal-header {
+    height: 100px; /* shift the modal a little down to unhide the selections */
+}
 /* Modal Content */
 .modal-content {
     background-color: #fefefe;
@@ -69,6 +72,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
 </form>
 
 <div id='result' class='modal'>
+  <div class='modal-header'>&nbsp;</div>
   <div class='modal-content'>
     <span class='close'>&times;</span>
     <div id='modal_id'>result of selection...</div>
@@ -124,21 +128,22 @@ function loadFile() {
     fr = new FileReader();
     fr.onload = receivedText;
     fr.readAsText(fileName);
-    try {
-      configFile = './config.json';
-      loadJSON(configFile, function(response) {
-        // Parse JSON string into object
-        var config_obj = JSON.parse(response);
-        console.log('Loaded: ' + config_obj.toString());
-        // TODO: nesting ?
-      });
+    // cross origin requests are only supported
+    // for protocol schemes: http, data, chrome, chrome-extension, https.
+	  /*
+      try {
+        configFile = './config.json';
+        loadJSON(configFile, function(response) {
+          // Parse JSON string into object
+          var config_obj = JSON.parse(response);
+          console.log('Loaded: ' + config_obj.toString());
+          // TODO: nesting ?
+        });
 
-    } catch (e) {
-      // cross origin requests are only supported
-      // for protocol schemes: http, data, chrome, chrome-extension, https.
-      console.log('Exception (ignored): ' + e.toString());
-    }
-
+      } catch (e) {
+        console.log('Exception (ignored): ' + e.toString());
+      }
+    */
   }
 
   function loadJSON(sourceFile, callback) {
@@ -219,17 +224,6 @@ function loadFile() {
       select_environments = {}
       cnt = 0;
       let branch_names = config_data['branch_names'];
-      /*
-      branch_names = {
-        'test': 'TEST',
-        'test_wec': 'TEST',
-        'prod': 'PROD',
-        'prod_bcp': 'PROD',
-        'sandbox': 'SANDBOX',
-        'cert': 'VALIDATION',
-        'cert_bcp': 'VALIDATION',
-      };
-*/
       for (var node_name in nodes) {
         console.log('processed node: ' + node_name);
         let environment = nodes[node_name]['environment'];
@@ -264,15 +258,6 @@ function loadFile() {
         select_datacenters[datacenter] = 1;
       }
       let datacenter_names = config_data['datacenter_names'];
-      /*
-      datacenter_names = {
-        'wec': 'WEC',
-        'wec1': 'WEC',
-        'oxdc': 'OXMOOR',
-        'st_louis': 'ST LOUIS',
-        'sv': 'SHOREVIEW',
-      };
-      */
       cnt = 0;
       for (var datacenter in select_datacenters) { // NOTE: not Object.keys->() or will get 0,1,...
         console.log('adding option: ' + datacenter);
@@ -314,8 +299,10 @@ function extractId() {
     }
   }
   if (Object.keys(select_nodes).length > 0) {
-    let message = 'Role: ' + select_role_value + '\n' + 'Data center: ' + select_datacenter_value + '\n' + 'Environment: ' + select_environment_value + '\n' + 'Node(s): ' + Object.keys(select_nodes).join(',').substring(0, 60);
-    // alert(message);
+	  let message = 'Role: ' + select_role_value + '<br/>' + '\n' +
+                   'Data center: ' + select_datacenter_value + '<br/>' + '\n' + 
+                   'Environment: ' + select_environment_value + '<br/>' + '\n' + 
+                   'Node(s): ' + Object.keys(select_nodes).join('<br/>').substring(0, 60);
     document.getElementById('modal_id').innerHTML = message;
     modal.style.display = 'block';
   } else {
