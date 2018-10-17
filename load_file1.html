@@ -109,6 +109,7 @@ window.onclick = function(event) {
 <script type='text/javascript'>
 function loadFile() {
   var input, file, fr;
+  let debug = document.getElementById('debug').checked;
   // Check for the various File API support
   if (window.File && window.FileReader && window.FileList && window.Blob) {
     // nop
@@ -118,17 +119,17 @@ function loadFile() {
   }
   input = document.getElementById('fileinput');
   if (!input) {
-    alert("Um, couldn't find the fileinput element.");
+    alert('the fileinput element not found.');
   } else if (!input.files) {
-    alert("This browser doesn't seem to support the `files` property of file inputs.");
+    alert('this browser does not support the file inputs.') ;
   } else if (!input.files[0]) {
-    alert("Please select a file before clicking 'Load'");
+    alert('Please choose a file first.');
   } else {
-
-
     fileName = input.files[0];
     try {
-      console.log(fileName);
+      if (debug){
+        console.log(fileName);
+      }
     } catch (e) {}
     fr = new FileReader();
     fr.onload = receivedText;
@@ -152,8 +153,10 @@ function loadFile() {
   }
 
   function loadJSON(sourceFile, callback) {
-
-    console.log('Loading: ' + sourceFile);
+    let debug = document.getElementById('debug').checked;
+    if (debug) {
+      console.log('Loading: ' + sourceFile);
+    }
     try {
       var xobj = new XMLHttpRequest();
       xobj.overrideMimeType('application/json');
@@ -181,7 +184,6 @@ function loadFile() {
 
   function processConfig() {
     let lines = e.target.result;
-
   }
 
   function receivedText(e) {
@@ -202,7 +204,8 @@ function loadFile() {
         load_data = false
       }
       if (load_data) {
-        if (hideunassigneds && (yamlDoc[nodeName]['consul_node_name'].indexOf('unassigned') != -1) ){
+        let consul_node_name = yamlDoc[nodeName]['consul_node_name'] ;
+        if (hideunassigneds && (consul_node_name.indexOf('unassigned') != -1) ){
           continue;
         }
         if (debug){
@@ -210,7 +213,7 @@ function loadFile() {
         }
         nodes[nodeName] = {
           'datacenter': yamlDoc[nodeName]['datacenter'],
-          'consul_node_name': yamlDoc[nodeName]['consul_node_name'],
+          'consul_node_name': consul_node_name,
           'environment': yamlDoc[nodeName]['branch_name'],
           'hostname': nodeName,
         };
@@ -225,10 +228,35 @@ function loadFile() {
       for (var node_name in nodes) {
         // console.log('processed node: ' + node_name ) ;
         let consul_role = nodes[node_name]['consul_node_name'];
-        // console.log('loaded: ' + consul_role ) ;
+        if (debug) {
+          console.log('loaded: ' + consul_role ) ;
+        }
         select_roles[consul_role] = 1;
       }
+      var raw_roles = [];
+
       for (var consul_role in select_roles) {
+        if (debug) {
+          console.log('Loading ' + consul_role);
+        }
+        raw_roles.push([consul_role, 0]);
+      }
+
+      // may want something more sophisticated ?
+      var sorted_roles = raw_roles.sort(function(a, b) {
+        // return a[0] - b[0];
+        if (a[0] < b[0]) return -1;
+        if (a[0] > b[0]) return 1;
+        return 0;
+
+      });
+
+      for (var role_index in sorted_roles /* select_roles */ ) {
+        var role_obj = sorted_roles[role_index];
+        var consul_role = role_obj[0];
+        if (debug){
+          console.log('Loaded ' + role_obj + ' ' + consul_role);
+        }
         document.process_yaml.select_roles.options[cnt] = new Option(consul_role, consul_role, false, false);
         cnt++
       }
@@ -237,9 +265,13 @@ function loadFile() {
       cnt = 0;
       let branch_names = config_data['branch_names'];
       for (var node_name in nodes) {
-        console.log('processed node: ' + node_name);
+        if (debug){
+          console.log('processed node: ' + node_name);
+        }
         let environment = nodes[node_name]['environment'];
-        console.log('loaded: ' + environment);
+        if (debug){
+          console.log('loaded: ' + environment);
+        }
         select_environments[environment] = branch_names.hasOwnProperty(environment) ? branch_names[environment] : environment;
       }
       branch_selects = {}
@@ -248,7 +280,9 @@ function loadFile() {
         let environment_displayname = select_environments[environment]
         if (branch_selects.hasOwnProperty(environment_displayname)) {
           select_environments[environment] = '';
-          console.log('will ignore: ' + environment + '(' + environment_displayname + ') ');
+          if (debug){
+            console.log('will ignore: ' + environment + '(' + environment_displayname + ') ');
+          }
         }
         branch_selects[environment_displayname] = 1;
       }
@@ -266,13 +300,17 @@ function loadFile() {
       for (var node_name in nodes) {
         // console.log('processed node: ' + node_name ) ;
         let datacenter = nodes[node_name]['datacenter'];
-        // console.log('loaded: ' + datacenter ) ;
+        if (debug){
+          console.log('loaded: ' + datacenter ) ;
+        }
         select_datacenters[datacenter] = 1;
       }
       let datacenter_names = config_data['datacenter_names'];
       cnt = 0;
       for (var datacenter in select_datacenters) { // NOTE: not Object.keys->() or will get 0,1,...
-        console.log('adding option: ' + datacenter);
+        if (debug){
+          console.log('adding option: ' + datacenter);
+        }
         document.process_yaml.select_datacenters.options[cnt] = new Option(datacenter_names[datacenter], datacenter, false, false);
         cnt++
       }

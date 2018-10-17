@@ -1,16 +1,16 @@
 ---
-ad8c3125:
+e530095c:
   datacenter: wec
-  consul_node_name: service-discovery-server-0
+  consul_node_name: service-discovery-server-1
   branch_name: cert
   environment: prod
   unused1:
   unused2:
   unused3:
   unused4:
-e530095c:
+ad8c3125:
   datacenter: wec
-  consul_node_name: service-discovery-server-1
+  consul_node_name: service-discovery-server-0
   branch_name: cert
   environment: prod
   unused1:
@@ -27,6 +27,18 @@ e530095c:
   unused2:
   unused3:
   unused4:
+b1bc58f1f: 
+  datacenter: wec
+  consul_node_name: unassigned-2 
+  branch_name: cert
+  environment: prod
+  unused1:
+6f2de2b1: 
+  datacenter: wec
+  consul_node_name: unassigned-10 
+  branch_name: cert
+  environment: prod
+  unused1:
 e577775c:
   datacenter: oxdc
   consul_node_name: apim-ap-manager-publisher-0
@@ -49,18 +61,6 @@ f32b0fb0:
 653175fc: 
   datacenter: wec
   consul_node_name: unassigned-1 
-  branch_name: cert
-  environment: prod
-  unused1:
-b1bc58f1f: 
-  datacenter: wec
-  consul_node_name: unassigned-2 
-  branch_name: cert
-  environment: prod
-  unused1:
-6f2de2b1: 
-  datacenter: wec
-  consul_node_name: unassigned-10 
   branch_name: cert
   environment: prod
   unused1:
