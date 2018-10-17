@@ -68,6 +68,11 @@ body {font-family: Arial, Helvetica, sans-serif;}
       <option value='cert'>data center</option>
     </select>
     <input type='button' id='btnProcess' value='Find' onclick='extractId();'>
+    <br/>
+    <small><label for 'hideunassigneds'>hide unassigned nodes</label></small>
+    <input type='checkbox' id='hideunassigneds' value='' checked='checked'/>
+    <small><label for 'debug'>debug</label></small>
+    <input type='checkbox' id='debug' value=''/>
   </fieldset>
 </form>
 
@@ -181,6 +186,8 @@ function loadFile() {
 
   function receivedText(e) {
     let lines = e.target.result;
+    let debug = document.getElementById('debug').checked;
+    let hideunassigneds = document.getElementById('hideunassigneds').checked;
     var yamlDoc = jsyaml.load(lines);
     nodes = {};
     // TODO: port, protocol, path building for healthcheck
@@ -195,7 +202,12 @@ function loadFile() {
         load_data = false
       }
       if (load_data) {
-        // console.log(nodeName);
+        if (hideunassigneds && (yamlDoc[nodeName]['consul_node_name'].indexOf('unassigned') != -1) ){
+          continue;
+        }
+        if (debug){
+          console.log('Loading: ' +  consul_node_name + ' | '+ nodeName);
+        }
         nodes[nodeName] = {
           'datacenter': yamlDoc[nodeName]['datacenter'],
           'consul_node_name': yamlDoc[nodeName]['consul_node_name'],
@@ -272,16 +284,17 @@ function loadFile() {
 }
 
 function extractId() {
+  let debug = document.getElementById('debug').checked;
   let nodes = JSON.parse(localStorage.getItem('nodes'));
-  let select_roles = document.getElementById("select_roles_id");
+  let select_roles = document.getElementById('select_roles_id');
   var select_role_value = select_roles.options[select_roles.selectedIndex].value;
   var select_role_text = select_roles.options[select_roles.selectedIndex].text;
 
-  let select_environments = document.getElementById("select_environments_id");
+  let select_environments = document.getElementById('select_environments_id');
   var select_environment_value = select_environments.options[select_environments.selectedIndex].value;
   var select_environment_text = select_environments.options[select_environments.selectedIndex].text;
 
-  let select_datacenters = document.getElementById("select_datacenters_id");
+  let select_datacenters = document.getElementById('select_datacenters_id');
   var select_datacenter_value = select_datacenters.options[select_datacenters.selectedIndex].value;
   var select_datacenter_text = select_datacenters.options[select_datacenters.selectedIndex].text;
 
@@ -291,7 +304,9 @@ function extractId() {
     let node_consul_role = node_obj['consul_node_name'];
     let node_environment = node_obj['environment'];
     let node_datacenter = node_obj['datacenter'];
-    console.log('comparing: ' + node_consul_role);
+    if (debug){
+      console.log('comparing: ' + node_consul_role);
+    }
     if (node_datacenter == select_datacenter_value && node_consul_role == select_role_value) {
       if (node_environment.indexOf(select_environment_value) == 0) {
         select_nodes[node_name] = 1;

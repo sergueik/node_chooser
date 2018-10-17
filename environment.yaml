@@ -46,6 +46,30 @@ f32b0fb0:
   unused2:
   unused3:
   unused4:
+653175fc: 
+  datacenter: wec
+  consul_node_name: unassigned-1 
+  branch_name: cert
+  environment: prod
+  unused1:
+b1bc58f1f: 
+  datacenter: wec
+  consul_node_name: unassigned-2 
+  branch_name: cert
+  environment: prod
+  unused1:
+6f2de2b1: 
+  datacenter: wec
+  consul_node_name: unassigned-10 
+  branch_name: cert
+  environment: prod
+  unused1:
+0d03acd6: 
+  datacenter: wec
+  consul_node_name: unassigned-9 
+  branch_name: cert
+  environment: prod
+  unused1:
 node_to_ignore:
   datacenter: wec
   branch_name: cert
