@@ -40,7 +40,8 @@ There was [earlier work](https://github.com/sergueik/powershell_ui_samples/blob/
 ### See also
 
   * [FileReader](http://www.html5rocks.com/en/tutorials/file/dndfiles/)
-  * [standalone yaml parser javscript package](https://github.com/nodeca/js-yaml)
+  * [standalone yaml parser package](https://github.com/nodeca/js-yaml)
+  * [standalone yaml parser CDN links](https://cdnjs.cloudflare.com)
   * [pure javascript file loader](https://codepen.io/KryptoniteDove/post/load-json-file-locally-using-pure-javascript) -  not applicable for local file case
   * [Storage viewer cached on crx4chrome](https://www.crx4chrome.com/down/116967/cdn/)
   * [Local Storage Explorer](https://chrome.google.com/webstore/detail/local-storage-explorer/hglfomidogadbhelcfomenpieffpfaeb?hl=en)

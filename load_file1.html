@@ -48,6 +48,15 @@ body {font-family: Arial, Helvetica, sans-serif;}
     text-decoration: none;
     cursor: pointer;
 }
+
+/* https://html-cleaner.com/features/replace-html-table-tags-with-divs/ */
+.rTable { display: table; }
+.rTableRow { display: table-row; }
+.rTableHeading { display: table-header-group; }
+.rTableBody { display: table-row-group; }
+.rTableFoot { display: table-footer-group; }
+.rTableCell, .rTableHead { display: table-cell; }
+
 </style>
 </head>
 <body>
@@ -86,6 +95,10 @@ body {font-family: Arial, Helvetica, sans-serif;}
 
 <div id='errors'></div>
 <script type='text/javascript' src='js-yaml.min.js'></script>
+<!-- CDN :
+<script src="https://cdnjs.cloudflare.com/ajax/libs/esprima/2.7.3/esprima.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.12.0/js-yaml.min.js"></script>
+-->
 <script type='text/javascript' src='config.js'></script>
 
 <script>
@@ -103,6 +116,72 @@ span.onclick = function() {
 window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = 'none';
+  }
+}
+</script>
+<script type='text/javascript'>
+function extractId() {
+  let debug = document.getElementById('debug').checked;
+  let nodes = JSON.parse(localStorage.getItem('nodes'));
+  let select_roles = document.getElementById('select_roles_id');
+  var select_role_value = select_roles.options[select_roles.selectedIndex].value;
+  var select_role_text = select_roles.options[select_roles.selectedIndex].text;
+
+  let select_environments = document.getElementById('select_environments_id');
+  var select_environment_value = select_environments.options[select_environments.selectedIndex].value;
+  var select_environment_text = select_environments.options[select_environments.selectedIndex].text;
+
+  let select_datacenters = document.getElementById('select_datacenters_id');
+  var select_datacenter_value = select_datacenters.options[select_datacenters.selectedIndex].value;
+  var select_datacenter_text = select_datacenters.options[select_datacenters.selectedIndex].text;
+
+  select_nodes = {};
+  for (var node_name in nodes) {
+    var node_obj = nodes[node_name];
+    let node_consul_role = node_obj['consul_node_name'];
+    let node_environment = node_obj['environment'];
+    let node_datacenter = node_obj['datacenter'];
+    if (debug){
+      console.log('comparing: ' + node_consul_role);
+    }
+    if (node_datacenter == select_datacenter_value && node_consul_role == select_role_value) {
+      if (node_environment.indexOf(select_environment_value) == 0) {
+        select_nodes[node_name] = 1;
+      }
+    }
+  }
+  if (Object.keys(select_nodes).length > 0) {
+    let message =
+      'Role: ' + select_role_value + '<br/>' + '\n' +
+      'Data center: ' + select_datacenter_value + '<br/>' + '\n' +
+      'Environment: ' + select_environment_value + '<br/>' + '\n' +
+      'Node(s): ' + Object.keys(select_nodes).join('<br/>').substring(0, 60);
+    message = '<div class="rTable">\n' +
+        '<div class="rTableRow">\n' +
+        '<div class="rTableCell">Role:</div>\n' +
+        '<div class="rTableCell">' + select_role_value + '</div>\n' +
+        '</div>\n' +
+        '<div class="rTableRow">\n' +
+        '<div class="rTableCell">Data center:</div>\n' +
+        '<div class="rTableCell">' + select_datacenter_value + '</div>\n' +
+        '</div>\n' +
+        '<div class="rTableRow">\n' +
+        '<div class="rTableCell">Environment:</div>\n' +
+        '<div class="rTableCell">' + select_environment_value + '</div>\n' +
+        '</div>\n' +
+        '<div class="rTableRow">\n' +
+        '<div class="rTableCell">Node(s):</div>\n' +
+        '<div class="rTableCell">' + Object.keys(select_nodes).join('<br/>').substring(0, 60) + '</div>\n' +
+        '</div>\n' +
+        '</div>';
+    document.getElementById('modal_id').innerHTML = message;
+    modal.style.display = 'block';
+  } else {
+    alert(
+      'Role: ' + select_role_value + '\n' +
+      'Data center: ' + select_datacenter_value + '\n' +
+      'Environment: ' + select_environment_value + '\n' +
+      'has no matching node');
   }
 }
 </script>
@@ -318,48 +397,6 @@ function loadFile() {
       document.getElementById('errors').innerHTML = e.message;
     }
     localStorage.setItem('nodes', JSON.stringify(nodes));
-  }
-}
-
-function extractId() {
-  let debug = document.getElementById('debug').checked;
-  let nodes = JSON.parse(localStorage.getItem('nodes'));
-  let select_roles = document.getElementById('select_roles_id');
-  var select_role_value = select_roles.options[select_roles.selectedIndex].value;
-  var select_role_text = select_roles.options[select_roles.selectedIndex].text;
-
-  let select_environments = document.getElementById('select_environments_id');
-  var select_environment_value = select_environments.options[select_environments.selectedIndex].value;
-  var select_environment_text = select_environments.options[select_environments.selectedIndex].text;
-
-  let select_datacenters = document.getElementById('select_datacenters_id');
-  var select_datacenter_value = select_datacenters.options[select_datacenters.selectedIndex].value;
-  var select_datacenter_text = select_datacenters.options[select_datacenters.selectedIndex].text;
-
-  select_nodes = {};
-  for (var node_name in nodes) {
-    var node_obj = nodes[node_name];
-    let node_consul_role = node_obj['consul_node_name'];
-    let node_environment = node_obj['environment'];
-    let node_datacenter = node_obj['datacenter'];
-    if (debug){
-      console.log('comparing: ' + node_consul_role);
-    }
-    if (node_datacenter == select_datacenter_value && node_consul_role == select_role_value) {
-      if (node_environment.indexOf(select_environment_value) == 0) {
-        select_nodes[node_name] = 1;
-      }
-    }
-  }
-  if (Object.keys(select_nodes).length > 0) {
-	  let message = 'Role: ' + select_role_value + '<br/>' + '\n' +
-                   'Data center: ' + select_datacenter_value + '<br/>' + '\n' + 
-                   'Environment: ' + select_environment_value + '<br/>' + '\n' + 
-                   'Node(s): ' + Object.keys(select_nodes).join('<br/>').substring(0, 60);
-    document.getElementById('modal_id').innerHTML = message;
-    modal.style.display = 'block';
-  } else {
-    alert('Role: ' + select_role_value + '\n' + 'Data center: ' + select_datacenter_value + '\n' + 'Environment: ' + select_environment_value + '\n' + 'has no matching node');
   }
 }
 </script>

@@ -17,5 +17,7 @@ var config_data = {
   },
 };
 try {
-  console.log('loaded config_data');
+  if (typeof debug === 'undefined' || debug === null) { } else {
+    console.log('loaded config_data');
+  }
 } catch (e) {}
